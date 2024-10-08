@@ -1,67 +1,76 @@
-function generateNote(NoteText) {
-  const elDivNoteCard = document.createElement('div')
-  const elDivNoteContent = document.createElement('div')
-  const elDivNoteActions = document.createElement('div')
-  const elPNoteTextContent = document.createElement('p')
-  const elBtnDeleteNote = document.createElement('button')
+function generateNote(noteText, isEditable) {
+  const elDivCard = document.createElement('div')
+  const elDivContent = document.createElement('div')
+  const elDivActions = document.createElement('div')
+  const elTextarea = document.createElement('textarea')
+  const elP = document.createElement('p')
+  const elButtonDelete = document.createElement('button')
 
-  elDivNoteCard.classList.add('note-card')
-  elDivNoteContent.classList.add('note-content')
-  elDivNoteActions.classList.add('note-actions')
-  elBtnDeleteNote.textContent = 'Удалить'
-  elPNoteTextContent.textContent = NoteText
-  elBtnDeleteNote.onclick = onClickDeleteNote
+  elDivCard.classList.add('note-card')
+  elDivContent.classList.add('note-content')
+  elDivActions.classList.add('note-actions')
+  elButtonDelete.textContent = 'Удалить'
+  elP.textContent = noteText
+  elTextarea.value = noteText
+  elButtonDelete.onclick = onClickDeleteNote
 
-  elDivNoteCard.appendChild(elDivNoteContent)
-  elDivNoteCard.appendChild(elDivNoteActions)
-  elDivNoteContent.appendChild(elPNoteTextContent)
-  elDivNoteActions.appendChild(elBtnDeleteNote)
+  elTextarea.addEventListener('blur', onBlurTextarea)
+  elP.addEventListener('dblclick', onDblClickNoteP)
 
-  elDivNoteContent.addEventListener('dblclick', () => {
-    const p = elDivNoteContent.querySelector('p')
-    const textarea = document.createElement('textarea')
-    textarea.value = NoteText
-    elDivNoteContent.replaceChild(textarea, p)
+  elDivCard.appendChild(elDivContent)
+  elDivCard.appendChild(elDivActions)
+  elDivActions.appendChild(elButtonDelete)
 
-    textarea.addEventListener('blur', () => {
-      NoteText = textarea.value
-      const newP = document.createElement('p')
-      newP.textContent = NoteText
-      elDivNoteContent.replaceChild(newP, textarea)
+  if (isEditable) {
+    elDivContent.appendChild(elTextarea)
+  } else {
+    elDivContent.appendChild(elP)
+  }
 
-      handleEditNote(p.textContent, NoteText)
-    })
-  })
-
-  return elDivNoteCard
+  return elDivCard
 }
 
-function renderNewNoteCard(NoteText) {
+let oldText = ''
+
+function onDblClickNoteP(e) {
+  const noteText = e.target.textContent
+  oldText = noteText
+  renderNotes(model.notes)
+}
+
+function onBlurTextarea(e) {
+  const noteText = e.target.value
+  handleEditNote(oldText, noteText)
+}
+
+function renderNotes(notes, isEditable) {
   const elDivNotes = document.querySelector('.notes')
-  const elDivNoteCard = generateNote(NoteText)
-  elDivNotes.appendChild(elDivNoteCard)
+  elDivNotes.textContent = ''
+  notes.forEach(noteText => {
+    const elDivNoteCard = generateNote(noteText, isEditable)
+    elDivNotes.appendChild(elDivNoteCard)
+  })
 }
-
-const ElBtnAddNote = document.querySelector('#add-note')
-ElBtnAddNote.onclick = onClickAddNote
 
 function onClickAddNote() {
-  let NoteText = document.querySelector('#note-content').value
-  handleAddNote(NoteText)
   const elTextArea = document.querySelector('#note-content')
+  handleAddNote(elTextArea.value)
   elTextArea.value = ' '
 }
 
 function onClickDeleteNote(e) {
-  const noteCard = e.target.closest('.note-card')
-  const noteContent = noteCard.querySelector('.note-content p')
-  const noteText = noteContent.textContent
+  const elNoteCard = e.target.closest('.note-card')
+  const elNoteContent = elNoteCard.querySelector('.note-content p')
+  const noteText = elNoteContent.textContent
 
   handleDeliteNote(noteText)
-  noteCard.remove()
+  elNoteCard.remove()
 }
 
-function renderNoteCount(number) {
+function renderNotesCounter(number) {
   const elSpanNoteCount = document.querySelector('.notes-count')
   elSpanNoteCount.textContent = `Всего заметок: ${number}`
 }
+
+const elBtnAddNote = document.querySelector('#add-note')
+elBtnAddNote.onclick = onClickAddNote

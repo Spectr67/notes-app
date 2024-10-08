@@ -1,5 +1,11 @@
 const model = {
-  notes: [],
+  notes: [
+    // {
+    //   id: 42,
+    //   text: 'hello',
+    //   isEditable: true,
+    // },
+  ],
 
   addNote(note) {
     this.notes.push(note)

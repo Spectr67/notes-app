@@ -1,16 +1,20 @@
-function handleAddNote(NoteText) {
-  renderNewNoteCard(NoteText)
-  model.addNote(NoteText)
+function handleAddNote(noteText) {
+  model.addNote(noteText)
   let number = model.noteCount()
-  renderNoteCount(number)
+  let notes = model.notes
+
+  renderNotes(notes)
+  renderNotesCounter(number)
 }
 
 function handleDeliteNote(noteText) {
   model.deleteNote(noteText)
   const number = model.noteCount()
-  renderNoteCount(number)
+  renderNotesCounter(number)
 }
 
 function handleEditNote(oldText, newText) {
   model.editNote(oldText, newText)
+  let notes = model.notes
+  renderNotes(notes)
 }
